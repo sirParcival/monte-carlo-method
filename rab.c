@@ -11,6 +11,8 @@ void count_rabbits(rabbit *r, unsigned int age);
 
 int main(void)
 {
+    
+
     rabbit *rabbits = NULL;
     for(int i = 1; i <= 9600; i++)
     {
@@ -46,14 +48,18 @@ void add_rabbits(rabbit **r, int id)
 
 void print_rabbits(rabbit *r)
 {
+    FILE *outfile = NULL;
+    char *outfilename = "output.csv";
+    outfile = fopen(outfilename, "w");
+
     rabbit *first;
     while (r != NULL)
     {
-        printf("%d, %d\n", r->id, r->age);
+        fprintf(outfile,"%d, %d\n", r->id, r->age);
         first = r;
         r = r->next;
     }
-
+    fclose(outfile);
 
 }
 
