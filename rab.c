@@ -6,6 +6,7 @@
 void add_rabbits(rabbit **r, int id);
 void print_rabbits(rabbit *r);
 void free_rabbits(rabbit *r);
+void delete_rabbits(rabbit *r);
 void count_rabbits(rabbit *r, unsigned int age);
 
 int main(void)
@@ -16,6 +17,7 @@ int main(void)
         add_rabbits(&rabbits, i);
     }
     count_rabbits(rabbits, 1);
+    delete_rabbits(rabbits);
     print_rabbits(rabbits);
     free_rabbits(rabbits);
     return 0;
@@ -68,6 +70,24 @@ void count_rabbits(rabbit *r, unsigned int age)
         }
         ptr = next;
     }
+}
+
+void delete_rabbits(rabbit *r)
+{
+    rabbit *ptr = r;
+    while (ptr != NULL)
+    {
+        rabbit *next = ptr->next;
+        if (ptr->age == 240)
+        {
+            ptr->prev->next = ptr->next;
+            if(ptr->next != NULL)
+                ptr->next->prev = ptr->prev;
+            free(ptr);
+        }
+        ptr = next;
+    }
+    
 }
 
 void free_rabbits(rabbit *r)
