@@ -3,8 +3,10 @@
 typedef struct rabbit
 {
     struct rabbit *prev;
+    
     unsigned int id;
     unsigned int age;
+    int pregnancy_week;
     int pair_id;
     bool adult;
     bool paired;
