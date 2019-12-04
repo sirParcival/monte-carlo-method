@@ -1,15 +1,17 @@
 #include <stdbool.h>
 
-typedef struct rabbit
+typedef struct Rabbit
 {
-    struct rabbit *prev;
+
     
     unsigned int id;
     unsigned int age;
-    int pregnancy_week;
-    int pair_id;
-    bool adult;
-    bool paired;
+    unsigned int pregnancy_week;
 
-    struct rabbit *next;
-}rabbit;
+    bool is_adult;
+    bool is_paired;
+
+    struct Rabbit *pair_ptr;
+    struct Rabbit *prev;
+    struct Rabbit *next;
+}Rabbit;
