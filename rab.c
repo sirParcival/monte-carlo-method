@@ -3,49 +3,10 @@
 #include <stdbool.h>
 #include "structure.h"
 
-void generate_rabbits(Rabbit **r, int id);
-void print_rabbits(Rabbit *r, double count);
-void flush_rabbits_from_memory(Rabbit *r);
-void kill_rabbits_after_five_years(Rabbit *r);
-void create_linked_list_of_rabbits(Rabbit *r, unsigned int age);
-void build_pairs(Rabbit *r);
-void pregnancy_run(Rabbit *r);
-Rabbit *found_last(Rabbit *ptr);
+
+Rabbit *found_last_rabbit(Rabbit *ptr);
 void generate_young_rabbits(Rabbit *last);
 
-int main(void)
-{
-    Rabbit *rabbits = NULL;
-    double rabbits_per_kic;
-    unsigned int quantity_of_rabbits = 9600;
-    unsigned int starting_age = 1;
-    unsigned int lifetime_in_weeks = 50;
-    for(int i = 1; i <= quantity_of_rabbits; i++)
-    {
-        generate_rabbits(&rabbits, i);
-    }
-    create_linked_list_of_rabbits(rabbits, starting_age);
-    
-    for (int i = 0; i < lifetime_in_weeks; i++)
-    {
-        rabbits_per_kic = 0;
-        kill_rabbits_after_five_years(rabbits);
-        build_pairs(rabbits);
-        pregnancy_run(rabbits);
-        Rabbit *ptr = rabbits;
-        while (ptr != NULL)
-        {
-            Rabbit *next = ptr->next;
-            ptr->age++;
-            ptr = next;
-            rabbits_per_kic++;
-        }
-        kill_rabbits_after_five_years(rabbits);
-    }
-    print_rabbits(rabbits, rabbits_per_kic);
-    flush_rabbits_from_memory(rabbits);
-    return 0;
-}
 
 void generate_rabbits(Rabbit **r, int id)
 {
@@ -77,15 +38,15 @@ void generate_rabbits(Rabbit **r, int id)
 void print_rabbits(Rabbit *r, double count)
 {
     FILE *outfile = NULL;
-    char *outfilename = "output.csv";
-    outfile = fopen(outfilename, "w");
+    char *outfilename = "../output.csv";
+    outfile = fopen(outfilename, "a");
 
-    Rabbit *first;
+
     while (r != NULL)
     {
-        fprintf(outfile,"%d, %d, %d, %d, %p\n", r->id, r->age, r->is_adult, r->is_paired, r->pair_ptr);
+        fprintf(outfile,"%d, %d, %d, %d, %p, %p\n", r->id, r->age, r->is_adult, r->is_paired, r->pair_ptr, r);
         
-        first = r;
+
         r = r->next;
     }
     fprintf(outfile, "Density: %f rabbits/kic^2\n", count/100);
@@ -111,7 +72,7 @@ void create_linked_list_of_rabbits(Rabbit *r, unsigned int age)
     }
 }
 
-void build_pairs(Rabbit *r)
+void build_rabbits_in_pairs(Rabbit *r)
 {
     Rabbit *ptr = r;
     
@@ -127,8 +88,7 @@ void build_pairs(Rabbit *r)
             if (ptr->next)
             {
                 Rabbit *tmp = ptr->next;
-                Rabbit *tmp_next = ptr->next->next;
-                while (tmp != NULL && tmp->next != NULL)
+                while (tmp != NULL)
                 {
                     if (tmp->is_adult && !tmp->is_paired)
                     {
@@ -138,8 +98,7 @@ void build_pairs(Rabbit *r)
                         ptr->pair_ptr = tmp;
                         break;
                     }
-                tmp = tmp_next;
-                tmp_next = tmp_next->next;
+                tmp = tmp->next;
                 
                 }
             }     
@@ -149,7 +108,7 @@ void build_pairs(Rabbit *r)
     
 }
 
-void pregnancy_run(Rabbit *r)
+void pregnancy_run_for_rabbits(Rabbit *r)
 {
     Rabbit *ptr = r;
     while (ptr != NULL)
@@ -159,37 +118,34 @@ void pregnancy_run(Rabbit *r)
         {
             Rabbit *tmp = ptr->next;
             Rabbit *tmp_next = tmp->next;
-            while (tmp != NULL && tmp->next != NULL)
-            {
-                
-                printf("ptr: %d, tmp: %d\n", ptr->id, tmp->id);
-                Rabbit *last = found_last(ptr);
-                printf("get last %d going forward\n", last->id);
+
+                //printf("ptr: %d, tmp: %d\n", ptr->id, tmp->id);
+                Rabbit *last = found_last_rabbit(ptr);
+                //printf("get last %d going forward\n", last->id);
 
                 if ((ptr->pair_ptr == tmp && tmp->pair_ptr == ptr))
                 {
                     
                     ptr->pregnancy_week++;
                     tmp->pregnancy_week++;
-                    printf("updated pregnancy %d\n", ptr->pregnancy_week);
-                    if (ptr->pregnancy_week == 12)
+                  //  printf("updated pregnancy %d\n", ptr->pregnancy_week);
+                    if (ptr->pregnancy_week >= 12)
                     {
                         generate_young_rabbits(last);
                         ptr->pregnancy_week = 0;
                         tmp->pregnancy_week = 0;
-                        printf("-----------------------made young----------------------------------------------\n");
+                    //    printf("-----------------------made young_rabbits----------------------------------------------\n");
                     }  
-                }break;
-                
-            }
-            
+                }
+
+            tmp = tmp_next;
         }
         ptr = next;
     }
     
 }
 
-Rabbit *found_last(Rabbit *ptr)
+Rabbit *found_last_rabbit(Rabbit *ptr)
 {
     Rabbit *r = ptr;
     Rabbit *last = NULL;
@@ -199,43 +155,45 @@ Rabbit *found_last(Rabbit *ptr)
         last = r;
         r = next;
     }
-    printf("returning last\n");
+   // printf("returning last\n");
     return last;
 }
 
 void generate_young_rabbits(Rabbit *last)
 {
-    Rabbit *young_last = last;
-    Rabbit *first = NULL;
+    Rabbit *young_rabbits_last = last;
     int children = 5;
     
     float similarity[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
     int simlen = sizeof(similarity)/sizeof(similarity[0]);
     double random = (double)rand() / (double)RAND_MAX;
-    printf("///////////////////random %f\n", random);
+    //printf("///////////////////random %f\n", random);
     for (int i = 0; i < simlen; i++)
     {
         if (random < similarity[i])
         {
+            Rabbit *young_rabbits = NULL;
+
+
             for (int j = 0; j < children; j++)
             {
-                Rabbit *young = malloc(sizeof(Rabbit));
-                if(!young)
+                young_rabbits = malloc(sizeof(Rabbit));
+                if(!young_rabbits)
                 {
                     return;
                 }
-                young->prev = young_last;
-                young->id = young_last->id + 1;
-                young->age = 0;
-                young->pair_ptr = NULL;
-                young->is_adult = false;
-                young->is_paired = false;
-                young_last->next = young;
-                young->next = NULL;
-                young_last = young;
-                printf("==================young created=============\n");
+                young_rabbits->prev = young_rabbits_last;
+                young_rabbits->id = young_rabbits_last->id + 1;
+                young_rabbits->age = 0;
+                young_rabbits->pair_ptr = NULL;
+                young_rabbits->is_adult = false;
+                young_rabbits->is_paired = false;
+                young_rabbits_last->next = young_rabbits;
+                young_rabbits->next = NULL;
+                young_rabbits_last = young_rabbits;
+      //          printf("==================young_rabbits created=============\n");
             }break;
-            
+
         }
         children++;
     }
@@ -248,9 +206,10 @@ void kill_rabbits_after_five_years(Rabbit *r)
     while (ptr != NULL)
     {
         Rabbit *next = ptr->next;
-        if (ptr->age == 240)
+        if (ptr->age >= 240)
         {
-            ptr->prev->next = ptr->next;
+            if(ptr->prev)
+                ptr->prev->next = ptr->next;
             if(ptr->next != NULL)
                 ptr->next->prev = ptr->prev;
             free(ptr);
