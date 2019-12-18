@@ -1,7 +1,7 @@
 //
 // Created by cydev on 12.12.2019.
 //
-
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "structure.h"
@@ -167,4 +167,81 @@ void print_animal_to_file(QueueList *animal_list, char *mode)
     }
     fprintf(outfile, "\n");
     fclose(outfile);
+}
+
+void hunting_on_rabbits(QueueList *rabbits, QueueList *wolves, int week, double rabbits_per_kits)
+{
+    double x = (double)rand()/(double)RAND_MAX;
+    Animal *rabbit = rabbits->first;
+    Animal *wolf = wolves->first;
+    while (wolf)
+    {
+        double lambda = 1 / (rabbits_per_kits * 0.01);
+        double s = -lambda*log(x);
+        for (int day = 0; day < 7; day++)
+        {
+            if (rabbit)
+            {
+                if((week - wolf->last_week_wolf_have_eaten) >= 4)
+                {
+                    if(wolf->prev == NULL)
+                    {
+                        wolves->first = wolf->next;
+                        if (wolf->next) wolf->next->prev = NULL;
+
+                         free(wolf);
+                    }
+                    else if (wolf->next == NULL)
+                    {
+                        wolves->last = wolf->prev;
+                        if (wolf->prev) wolf->prev->next = NULL;
+
+                        free(wolf);
+                    }
+                    else
+                    {
+                        wolf->prev->next = wolf->next;
+                        wolf->next->prev = wolf->prev;
+                        free(wolf);
+                    }
+                }
+                if (s > 1)
+                {
+                    s--;
+                    continue;
+                } else{
+                    double chance = (double)rand() / (double)RAND_MAX;
+                    if (chance < (0.8 - 0.2 * (week - wolf->last_week_wolf_have_eaten)))
+                    {
+                        rabbits->first = rabbit->next;
+                        if (rabbit->next)
+                        {
+                            rabbit->next->prev = NULL;
+                            rabbit = rabbit->next;
+                            free(rabbit);
+                        } else{
+                            rabbits->first = NULL;
+                            rabbits->last = NULL;
+                        }
+
+
+                        wolf->last_week_wolf_have_eaten = week;
+                    }
+                }
+            }
+        }
+        wolf = wolf->next;
+    }
+
+}
+
+void flush_animals_from_memory(QueueList *list)
+{
+    Animal *animal = list->first;
+    while (animal)
+    {
+        Animal *animal_next = animal->next;
+        free(animal);
+        animal = animal_next;
+    }
 }

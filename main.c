@@ -10,13 +10,13 @@ int main() {
     QueueList *list_of_wolves;
     list_of_wolves = (QueueList*)malloc(sizeof(QueueList));
     list_of_rabbits = (QueueList*)malloc(sizeof(QueueList));
-    int quantity_of_rabbits = 2;
+    int quantity_of_rabbits = 5;
     int quantity_of_wolves = 2;
     unsigned int rabbits_starting_age = 1;
-    unsigned int wolves_starting_age = 1;
+    unsigned int wolves_starting_age = 50;
     int rabbits_life_length = 240;
     int wolves_life_length = 580;
-    int lifetime = 40;
+    int lifetime = 5;
     int rabbits_ripening_age = 12;
     int wolves_ripening_age = 36;
     int rabbit_pregnancy_time = 12;
@@ -27,6 +27,7 @@ int main() {
     int wolves_childrenmin = 4;
     int rabbits_simlen = sizeof(rabbits_similarity)/sizeof(rabbits_similarity[0]);
     int wolves_simlen = sizeof(wolf_similarity)/sizeof(wolf_similarity[0]);
+    int area = 100;
 
     for (int i = 0; i < quantity_of_rabbits; i++)
     {
@@ -40,9 +41,9 @@ int main() {
 
     ///Life simulation///
 
-    for (int i = 0; i < lifetime; i++)
+    for (int week = 0; week < lifetime; week++)
     {
-
+        double rabbits_per_kits = 0;
         kill_animal_after_some_time(list_of_rabbits, rabbits_life_length);
         Animal *rabbit = list_of_rabbits->first;
         while (rabbit)
@@ -50,8 +51,9 @@ int main() {
             rabbit->age++;
             if (rabbit->age >= rabbits_ripening_age) rabbit->is_adult = true;
             rabbit = rabbit->next;
-
+            rabbits_per_kits++;
         }
+        rabbits_per_kits = rabbits_per_kits/area;
         build_pairs(list_of_rabbits);
         pregnancy_run(list_of_rabbits, rabbit_pregnancy_time, rabbits_similarity, rabbits_childrenmin, rabbits_simlen);
 
@@ -66,12 +68,15 @@ int main() {
         }
         build_pairs(list_of_wolves);
         pregnancy_run(list_of_wolves, wolf_pregnancy_time, wolf_similarity, wolves_childrenmin, wolves_simlen);
-        printf("Week: %d\n", i+1);
+        hunting_on_rabbits(list_of_rabbits, list_of_wolves, week+1, rabbits_per_kits);
+        printf("Week: %d\n", week+1);
 
     }
 
     print_animal_to_file(list_of_rabbits, "w");
     print_animal_to_file(list_of_wolves, "a");
+    flush_animals_from_memory(list_of_rabbits);
+    flush_animals_from_memory(list_of_wolves);
     free(list_of_rabbits);
     free(list_of_wolves);
 
