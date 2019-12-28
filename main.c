@@ -8,15 +8,19 @@ int main() {
 
     QueueList *list_of_rabbits;
     QueueList *list_of_wolves;
+    QueueList *rabbits_death_note;
+    QueueList *wolves_death_note;
     list_of_wolves = (QueueList*)malloc(sizeof(QueueList));
     list_of_rabbits = (QueueList*)malloc(sizeof(QueueList));
-    int quantity_of_rabbits = 5;
+    rabbits_death_note = (QueueList*)malloc(sizeof(QueueList));
+    wolves_death_note = (QueueList*)malloc(sizeof(QueueList));
+    int quantity_of_rabbits = 1000;
     int quantity_of_wolves = 2;
     unsigned int rabbits_starting_age = 1;
     unsigned int wolves_starting_age = 50;
     int rabbits_life_length = 240;
     int wolves_life_length = 580;
-    int lifetime = 5;
+    int lifetime = 140;
     int rabbits_ripening_age = 12;
     int wolves_ripening_age = 36;
     int rabbit_pregnancy_time = 12;
@@ -44,7 +48,9 @@ int main() {
     for (int week = 0; week < lifetime; week++)
     {
         double rabbits_per_kits = 0;
-        kill_animal_after_some_time(list_of_rabbits, rabbits_life_length);
+
+        create_list_of_old(list_of_rabbits, rabbits_death_note, rabbits_life_length);
+        flush_animals_from_memory(rabbits_death_note);
         Animal *rabbit = list_of_rabbits->first;
         while (rabbit)
         {
@@ -54,11 +60,13 @@ int main() {
             rabbits_per_kits++;
         }
         rabbits_per_kits = rabbits_per_kits/area;
+        printf("%f\n", rabbits_per_kits);
         build_pairs(list_of_rabbits);
         pregnancy_run(list_of_rabbits, rabbit_pregnancy_time, rabbits_similarity, rabbits_childrenmin, rabbits_simlen);
 
 
-        kill_animal_after_some_time(list_of_wolves, wolves_life_length);
+        create_list_of_old(list_of_wolves, wolves_death_note, wolves_life_length);
+        flush_animals_from_memory(wolves_death_note);
         Animal *wolf = list_of_wolves->first;
         while (wolf)
         {
@@ -68,7 +76,7 @@ int main() {
         }
         build_pairs(list_of_wolves);
         pregnancy_run(list_of_wolves, wolf_pregnancy_time, wolf_similarity, wolves_childrenmin, wolves_simlen);
-        hunting_on_rabbits(list_of_rabbits, list_of_wolves, week+1, rabbits_per_kits);
+        hunting_on_rabbits(list_of_rabbits, list_of_wolves, rabbits_death_note, wolves_death_note, week, rabbits_per_kits);
         printf("Week: %d\n", week+1);
 
     }
@@ -79,6 +87,8 @@ int main() {
     flush_animals_from_memory(list_of_wolves);
     free(list_of_rabbits);
     free(list_of_wolves);
+    free(rabbits_death_note);
+    free(wolves_death_note);
 
     return 0;
 }

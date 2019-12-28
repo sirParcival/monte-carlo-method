@@ -41,38 +41,50 @@ void create_linked_list(QueueList *queueList, int id, unsigned int *age)
         }
 }
 
-void kill_animal_after_some_time(QueueList *animal_list, int time_of_death)
+void create_list_of_old(QueueList *list, QueueList *list_of_old, int time_of_death)
 {
-
-    Animal *animal = animal_list->first;
+    Animal *animal = list->first;
     while (animal)
     {
+        Animal *next = animal->next;
         if (animal->age >= time_of_death)
         {
             if(animal->prev == NULL)
             {
-                animal_list->first = animal->next;
+                list->first = animal->next;
                 if (animal->next) animal->next->prev = NULL;
 
-                free(animal);
             }
             else if (animal->next == NULL)
             {
-                animal_list->last = animal->prev;
+                list->last = animal->prev;
                 if (animal->prev) animal->prev->next = NULL;
 
-                free(animal);
             }
             else
             {
                 animal->prev->next = animal->next;
                 animal->next->prev = animal->prev;
-                free(animal);
+            }
+            if(!list_of_old->first)
+            {
+                list_of_old->first = animal;
+                list_of_old->first->prev = NULL;
+                list_of_old->last = animal;
+                list_of_old->last->next = NULL;
+            }
+            else
+            {
+                list_of_old->last->next = animal;
+                list_of_old->last->next->prev = list_of_old->last;
+                list_of_old->last = animal;
+                list_of_old->last->next = NULL;
             }
         }
-        animal = animal->next;
+        animal = next;
     }
 }
+
 
 void build_pairs(QueueList *list)
 {
@@ -169,68 +181,111 @@ void print_animal_to_file(QueueList *animal_list, char *mode)
     fclose(outfile);
 }
 
-void hunting_on_rabbits(QueueList *rabbits, QueueList *wolves, int week, double rabbits_per_kits)
+void hunting_on_rabbits(QueueList *rabbits, QueueList *wolves,QueueList *dead_rabbits,QueueList *dead_wolves, int week, double rabbits_per_kits)
 {
     double x = (double)rand()/(double)RAND_MAX;
     Animal *rabbit = rabbits->first;
     Animal *wolf = wolves->first;
     while (wolf)
     {
+        Animal *next_wolf = wolf->next;
         double lambda = 1 / (rabbits_per_kits * 0.01);
         double s = -lambda*log(x);
         for (int day = 0; day < 7; day++)
         {
+            if((week - wolf->last_week_wolf_have_eaten) >= 4)
+            {
+                if(wolf->prev == NULL)
+                {
+                    wolves->first = wolf->next;
+                    if (wolf->next) wolf->next->prev = NULL;
+                }
+                else if (wolf->next == NULL)
+                {
+                    wolves->last = wolf->prev;
+                    if (wolf->prev) wolf->prev->next = NULL;
+                }
+                else
+                {
+                    wolf->prev->next = wolf->next;
+                    wolf->next->prev = wolf->prev;
+                }
+                if (!wolf->next && !wolf->prev)
+                {
+                    wolves->first = NULL;
+                    wolves->last = NULL;
+                }
+
+                if (!dead_wolves->first)
+                {
+                    dead_wolves->first = wolf;
+                    dead_wolves->first->prev = NULL;
+                    dead_wolves->last = wolf;
+                    dead_wolves->last->next = NULL;
+                    wolf = next_wolf;
+
+                    break;
+                }
+                else
+                {
+                    if(dead_wolves->last->next) dead_wolves->last->next->prev = dead_wolves->last;
+                    dead_wolves->last = wolf;
+                    dead_wolves->last->next = NULL;
+                    wolf = next_wolf;
+                    break;
+                }
+
+            }
             if (rabbit)
             {
-                if((week - wolf->last_week_wolf_have_eaten) >= 4)
-                {
-                    if(wolf->prev == NULL)
-                    {
-                        wolves->first = wolf->next;
-                        if (wolf->next) wolf->next->prev = NULL;
 
-                         free(wolf);
-                    }
-                    else if (wolf->next == NULL)
-                    {
-                        wolves->last = wolf->prev;
-                        if (wolf->prev) wolf->prev->next = NULL;
-
-                        free(wolf);
-                    }
-                    else
-                    {
-                        wolf->prev->next = wolf->next;
-                        wolf->next->prev = wolf->prev;
-                        free(wolf);
-                    }
-                }
-                if (s > 1)
+                if (s < 1)
                 {
-                    s--;
-                    continue;
-                } else{
                     double chance = (double)rand() / (double)RAND_MAX;
                     if (chance < (0.8 - 0.2 * (week - wolf->last_week_wolf_have_eaten)))
                     {
-                        rabbits->first = rabbit->next;
+
                         if (rabbit->next)
                         {
-                            rabbit->next->prev = NULL;
-                            rabbit = rabbit->next;
-                            free(rabbit);
+                            rabbits->first = rabbit->next;
+                            rabbits->first->prev = NULL;
                         } else{
                             rabbits->first = NULL;
                             rabbits->last = NULL;
                         }
 
+                        if (!dead_rabbits->first)
+                        {
+                            dead_rabbits->first = rabbit;
+                            dead_rabbits->first->prev = NULL;
+                            dead_rabbits->last = rabbit;
 
-                        wolf->last_week_wolf_have_eaten = week;
-                    }
+                            wolf->last_week_wolf_have_eaten = week+1;
+                            rabbit = rabbit->next;
+                            dead_rabbits->last->next = NULL;
+                            break;
+                        }
+                        else
+                        {
+                            dead_rabbits->last->next = rabbit;
+                            dead_rabbits->last->next->prev = dead_rabbits->last;
+                            dead_rabbits->last = rabbit;
+
+                            wolf->last_week_wolf_have_eaten = week+1;
+                            rabbit = rabbit->next;
+                            dead_rabbits->last->next = NULL;
+                            break;
+                        }
+
+
+
+                }
+                }else{
+                    s--;
                 }
             }
-        }
-        wolf = wolf->next;
+        }wolf = next_wolf;
+
     }
 
 }
@@ -244,4 +299,6 @@ void flush_animals_from_memory(QueueList *list)
         free(animal);
         animal = animal_next;
     }
+    list->first = NULL;
+    list->last = NULL;
 }
