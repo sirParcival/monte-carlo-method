@@ -5,7 +5,7 @@
 #ifndef MONTE_CARLO_METHOD_LIBFUNCTION_H
 #define MONTE_CARLO_METHOD_LIBFUNCTION_H
 
-void create_linked_list(QueueList *queueList, int id, unsigned int *age);
+void create_linked_list(QueueList *queueList, char id, unsigned int *age);
 
 void create_list_of_old(QueueList *list, QueueList *list_of_old, int time_of_death);
 void print_animal_to_file(QueueList *animal_list, char *mode);

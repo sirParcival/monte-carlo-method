@@ -14,13 +14,13 @@ int main() {
     list_of_rabbits = (QueueList*)malloc(sizeof(QueueList));
     rabbits_death_note = (QueueList*)malloc(sizeof(QueueList));
     wolves_death_note = (QueueList*)malloc(sizeof(QueueList));
-    int quantity_of_rabbits = 1000;
-    int quantity_of_wolves = 2;
+    int quantity_of_rabbits = 900;
+    int quantity_of_wolves = 26;
     unsigned int rabbits_starting_age = 1;
-    unsigned int wolves_starting_age = 50;
+    unsigned int wolves_starting_age = 1;
     int rabbits_life_length = 240;
     int wolves_life_length = 580;
-    int lifetime = 140;
+    int lifetime = 100;
     int rabbits_ripening_age = 12;
     int wolves_ripening_age = 36;
     int rabbit_pregnancy_time = 12;

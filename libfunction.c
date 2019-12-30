@@ -123,7 +123,7 @@ void pregnancy_run(QueueList *list, int pregnancy_limit, double *similarity, int
         {
             animal->pregnancy_week++;
             animal->pair_ptr->pregnancy_week++;
-            if (animal->pregnancy_week == pregnancy_limit)
+            if (animal->pregnancy_week >= pregnancy_limit)
             {
                 generate_young(list, similarity, children, array_length);
                 animal->pregnancy_week = 0;
@@ -156,6 +156,7 @@ void generate_young(QueueList *list, double *similarity, int children, int array
                 young_animal->age = 0;
                 young_animal->is_adult = false;
                 young_animal->is_paired = false;
+                young_animal->last_week_wolf_have_eaten = list->last->last_week_wolf_have_eaten;
                 young_animal->next = NULL;
                 list->last->next = young_animal;
                 list->last = young_animal;
