@@ -223,16 +223,14 @@ void hunting_on_rabbits(QueueList *rabbits, QueueList *wolves,QueueList *dead_ra
                     dead_wolves->first->prev = NULL;
                     dead_wolves->last = wolf;
                     dead_wolves->last->next = NULL;
-                    wolf = next_wolf;
-
                     break;
                 }
                 else
                 {
-                    if(dead_wolves->last->next) dead_wolves->last->next->prev = dead_wolves->last;
+                    dead_wolves->last->next = wolf;
+                    dead_wolves->last->next->prev = dead_wolves->last;
                     dead_wolves->last = wolf;
                     dead_wolves->last->next = NULL;
-                    wolf = next_wolf;
                     break;
                 }
 
