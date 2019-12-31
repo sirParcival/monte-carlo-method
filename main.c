@@ -4,6 +4,10 @@
 #include "structure.h"
 #include "libfunction.h"
 
+void simulate_life(QueueList *list, QueueList *death_note, int life_length, int ripening_age, int pregnancy_time,
+                   double *similarity, int childrenmin, int simlen, int week, int area, double *rabbits_per_kits,
+                   QueueList *rabbits_death_note, QueueList *list_of_rabbits);
+
 int main() {
 
     QueueList *list_of_rabbits;
@@ -32,6 +36,7 @@ int main() {
     int rabbits_simlen = sizeof(rabbits_similarity)/sizeof(rabbits_similarity[0]);
     int wolves_simlen = sizeof(wolf_similarity)/sizeof(wolf_similarity[0]);
     int area = 100;
+    double rabbits_per_kits = 0;
 
     for (int i = 0; i < quantity_of_rabbits; i++)
     {
@@ -47,44 +52,17 @@ int main() {
 
     for (int week = 0; week < lifetime; week++)
     {
-        double rabbits_per_kits = 0;
+        simulate_life(list_of_rabbits, rabbits_death_note, rabbits_life_length, rabbits_ripening_age,
+                rabbit_pregnancy_time, rabbits_similarity, rabbits_childrenmin, rabbits_simlen, week, area,
+                &rabbits_per_kits, NULL, NULL);
 
-        create_list_of_old(list_of_rabbits, rabbits_death_note, rabbits_life_length);
-
-        Animal *rabbit = list_of_rabbits->first;
-        while (rabbit)
-        {
-            rabbit->age++;
-            if (rabbit->age >= rabbits_ripening_age) rabbit->is_adult = true;
-            rabbit = rabbit->next;
-            rabbits_per_kits++;
-        }
-        rabbits_per_kits = rabbits_per_kits/area;
-        printf("%f\n", rabbits_per_kits);
-        build_pairs(list_of_rabbits);
-        pregnancy_run(list_of_rabbits, rabbit_pregnancy_time, rabbits_similarity, rabbits_childrenmin, rabbits_simlen);
-
-
-        create_list_of_old(list_of_wolves, wolves_death_note, wolves_life_length);
-
-        Animal *wolf = list_of_wolves->first;
-        while (wolf)
-        {
-            wolf->age++;
-            if (wolf->age >= wolves_ripening_age) wolf->is_adult = true;
-            wolf = wolf->next;
-        }
-        build_pairs(list_of_wolves);
-        pregnancy_run(list_of_wolves, wolf_pregnancy_time, wolf_similarity, wolves_childrenmin, wolves_simlen);
-        hunting_on_rabbits(list_of_rabbits, list_of_wolves, rabbits_death_note, wolves_death_note, week, rabbits_per_kits);
-
-        printf("Week: %d\n", week+1);
-
+        simulate_life(list_of_wolves, wolves_death_note, wolves_life_length, wolves_ripening_age, wolf_pregnancy_time,
+                wolf_similarity, wolves_childrenmin, wolves_simlen, week, area, &rabbits_per_kits, rabbits_death_note, list_of_rabbits);
     }
-    flush_animals_from_memory(rabbits_death_note);
+
     print_animal_to_file(list_of_rabbits, "w");
     print_animal_to_file(list_of_wolves, "a");
-    flush_animals_from_memory(wolves_death_note);
+
     flush_animals_from_memory(list_of_rabbits);
     flush_animals_from_memory(list_of_wolves);
     free(list_of_rabbits);
@@ -95,3 +73,36 @@ int main() {
     return 0;
 }
 
+
+
+
+void simulate_life(QueueList *list, QueueList *death_note, int life_length, int ripening_age, int pregnancy_time,
+                   double *similarity, int childrenmin, int simlen, int week, int area, double *rabbits_per_kits,
+                   QueueList *rabbits_death_note, QueueList *list_of_rabbits)
+
+{
+
+    double animal_per_kits = 0;
+    create_list_of_old(list, death_note, life_length);
+
+    Animal *animal = list->first;
+    while (animal)
+    {
+        animal->age++;
+        if (animal->age >= ripening_age) animal->is_adult = true;
+        animal = animal->next;
+        animal_per_kits++;
+    }
+    animal_per_kits = animal_per_kits/area;
+    build_pairs(list);
+    pregnancy_run(list, pregnancy_time, similarity, childrenmin, simlen);
+    if (list_of_rabbits != NULL)
+    {
+        hunting_on_rabbits(list_of_rabbits, list, rabbits_death_note, death_note, week, *rabbits_per_kits);
+        flush_animals_from_memory(rabbits_death_note);
+    } else{
+        *rabbits_per_kits = animal_per_kits;
+    }
+    flush_animals_from_memory(death_note);
+    printf("Week: %d\n", week+1);
+}
