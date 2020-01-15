@@ -33,7 +33,7 @@ To build project you need use those commands:
 
 **USAGE**
 
-To use this program you need to run this:
+To use program you need to run this:
 
 `monte_carlo_method /path/to/your/input/file.* /destination/of/output.csv`
 
