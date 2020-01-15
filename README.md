@@ -33,7 +33,7 @@ To build project you need use those commands:
 
 **USAGE**
 
-To use this programm you need to run this:
+To use this program you need to run this:
 
 `monte_carlo_method /path/to/your/input/file.* /destination/of/output.csv`
 
@@ -49,6 +49,6 @@ key: value
 
 ...
 
-P.S. You are not supposed to change "key" names. In case you change it just know that programm won't work correctly.
+P.S. You are not supposed to change "key" names. In case you change it just know that program won't work correctly.
 
 
