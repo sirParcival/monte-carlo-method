@@ -35,4 +35,17 @@ typedef struct QueueList
     unsigned int number_of_list_elements;
 }QueueList;
 
+typedef struct ife
+{
+    struct ife *next;
+    int value;
+    char *key;
+}Ife;
+
+struct Queue
+{
+    Ife *first;
+    Ife *last;
+};
+
 #endif //MONTE_CARLO_METHOD_STRUCTURE_H

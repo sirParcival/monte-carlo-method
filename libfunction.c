@@ -5,8 +5,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "structure.h"
+#include <string.h>
 
 void generate_young(QueueList *, double *similarity, int children, int array_length);
+void get_data_from_datalist(char *key, int value, int *quantity_of_rabbits, int *quantity_of_wolves, unsigned int *rabbits_starting_age,
+                             unsigned int *wolves_starting_age, int *rabbits_life_length, int *wolves_life_length,
+                             int *rabbits_ripening_age, int *wolves_ripening_age, int *rabbits_pregnancy_time,
+                             int *wolves_pregnancy_time, int *rabbits_childrenmin, int *wolves_childrenmin, int *lifetime,
+                             int *area);
 
 void create_linked_list(QueueList *queueList, int id, unsigned int *age)
 {
@@ -40,6 +46,7 @@ void create_linked_list(QueueList *queueList, int id, unsigned int *age)
             queueList->number_of_list_elements++;
         }
 }
+
 
 void create_list_of_old(QueueList *list, QueueList *list_of_old, int time_of_death)
 {
@@ -167,17 +174,18 @@ void generate_young(QueueList *list, double *similarity, int children, int array
     }
 }
 
-void print_animal_to_file(QueueList *animal_list, char *mode)
+void print_animal_to_file(char *out_filename, int week, double wolves_density, double rabbits_density)
 {
     FILE *outfile = NULL;
-    char *outfilename = "../output.csv";
-    outfile = fopen(outfilename, mode);
-    Animal *animal = animal_list->first;
-    while (animal)
-    {
-        fprintf(outfile,"%d, %d, %d, %d, %p, %p\n", animal->id, animal->age, animal->is_adult, animal->is_paired, animal->pair_ptr, animal);
-        animal = animal->next;
+    if(week == 0){
+        outfile = fopen(out_filename, "w");
+        fprintf(outfile,"Week, Wolves density, Rabbits density");
+    }else{
+        outfile = fopen(out_filename, "a");
+        fprintf(outfile, "%d, %f, %f", week, wolves_density, rabbits_density);
     }
+
+
     fprintf(outfile, "\n");
     fclose(outfile);
 }
@@ -300,4 +308,115 @@ void flush_animals_from_memory(QueueList *list)
     }
     list->first = NULL;
     list->last = NULL;
+}
+
+
+void parse_input_file(char *filename, int *quantity_of_rabbits, int *quantity_of_wolves, unsigned int *rabbits_starting_age,
+                   unsigned int *wolves_starting_age, int *rabbits_life_length, int *wolves_life_length,
+                   int *rabbits_ripening_age, int *wolves_ripening_age, int *rabbits_pregnancy_time,
+                   int *wolves_pregnancy_time, int *rabbits_childrenmin, int *wolves_childrenmin, int *lifetime,
+                   int *area) {
+    FILE *file;
+    file = fopen(filename, "r");
+    if(!file){
+        return;
+    }
+    char string[50] = {0};
+    while(fgets(string, 50, file) != NULL){
+        char key_string[20] = {0};
+        char s[1];
+        char value_string[10] = {0};
+        for (unsigned int i = 0; i < strlen(string); i++){
+            if(string[i] >= '0' && string[i] <= '9'){
+
+                s[0] = string[i];
+                strncat(value_string, s, 1);
+            } else if (string[i] == '\n'){
+                get_data_from_datalist(key_string, atoi(value_string),  quantity_of_rabbits,  quantity_of_wolves,
+                        rabbits_starting_age,
+                 wolves_starting_age,  rabbits_life_length,  wolves_life_length,
+                 rabbits_ripening_age,  wolves_ripening_age,  rabbits_pregnancy_time,
+                 wolves_pregnancy_time,  rabbits_childrenmin,  wolves_childrenmin,  lifetime,
+                 area);
+            } else{
+                if (string[i] != ':' && string[i] != ' '){
+                    s[0] = string[i];
+                    strncat(key_string, s, 1);
+                }
+            }
+        }
+    }
+    free(file);
+}
+
+
+void simulate_life(QueueList *list, QueueList *death_note, int life_length, int ripening_age, int pregnancy_time,
+                   double *similarity, int childrenmin, int simlen, int week, int area, double *rabbits_per_kits, double *wolves_per_kits,
+                   QueueList *rabbits_death_note, QueueList *list_of_rabbits)
+
+{
+
+    double animal_per_kits = 0;
+    create_list_of_old(list, death_note, life_length);
+
+    Animal *animal = list->first;
+    while (animal)
+    {
+        animal->age++;
+        if (animal->age >= ripening_age) animal->is_adult = true;
+        animal = animal->next;
+        animal_per_kits++;
+    }
+    animal_per_kits = animal_per_kits/area;
+    build_pairs(list);
+    pregnancy_run(list, pregnancy_time, similarity, childrenmin, simlen);
+    if (list_of_rabbits != NULL)
+    {
+        *wolves_per_kits = animal_per_kits;
+        hunting_on_rabbits(list_of_rabbits, list, rabbits_death_note, death_note, week, *rabbits_per_kits);
+        flush_animals_from_memory(rabbits_death_note);
+    } else{
+        *rabbits_per_kits = animal_per_kits;
+    }
+    flush_animals_from_memory(death_note);
+    printf("Week: %d\n", week+1);
+}
+
+void get_data_from_datalist(char *key, int value, int *quantity_of_rabbits, int *quantity_of_wolves, unsigned int *rabbits_starting_age,
+                            unsigned int *wolves_starting_age, int *rabbits_life_length, int *wolves_life_length,
+                            int *rabbits_ripening_age, int *wolves_ripening_age, int *rabbits_pregnancy_time,
+                            int *wolves_pregnancy_time, int *rabbits_childrenmin, int *wolves_childrenmin, int *lifetime,
+                            int *area){
+
+        if(strcmp(key, "quantity_of_rabbits") == 0){
+            *quantity_of_rabbits = value;
+        } else if (strcmp(key, "quantity_of_wolves") == 0){
+            *quantity_of_wolves = value;
+        } else if (strcmp(key, "rabbits_starting_age") == 0){
+            *rabbits_starting_age = value;
+        } else if (strcmp(key, "wolves_starting_age") == 0){
+            *wolves_starting_age = value;
+        } else if (strcmp(key, "rabbits_life_length") == 0){
+            *rabbits_life_length = value;
+        } else if (strcmp(key, "wolves_life_length") == 0){
+            *wolves_life_length = value;
+        } else if (strcmp(key, "rabbits_ripening_age") == 0){
+            *rabbits_ripening_age = value;
+        } else if (strcmp(key, "wolves_ripening_age") == 0){
+            *wolves_ripening_age = value;
+        } else if (strcmp(key, "rabbits_pregnancy_time") == 0){
+            *rabbits_pregnancy_time = value;
+        } else if (strcmp(key, "wolves_pregnancy_time") == 0){
+            *wolves_pregnancy_time = value;
+        } else if (strcmp(key, "rabbits_childrenmin") == 0){
+            *rabbits_childrenmin = value;
+        } else if (strcmp(key, "wolves_childrenmin") == 0){
+            *wolves_childrenmin = value;
+        } else if (strcmp(key, "lifetime") == 0){
+            *lifetime = value;
+        } else if (strcmp(key, "area") == 0){
+            *area = value;
+        }
+
+
 }

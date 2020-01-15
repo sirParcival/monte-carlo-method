@@ -1,0 +1,14 @@
+quantity_of_rabbits: 1000
+quantity_of_wolves: 2
+rabbits_starting_age: 2
+wolves_starting_age: 32
+rabbits_pregnancy_time: 12
+wolves_pregnancy_time: 24
+rabbits_childrenmin: 5
+wolves_childrenmin: 4
+rabbits_life_length: 240
+wolves_life_length: 520
+rabbits_ripening_age: 12
+wolves_ripening_age: 24
+lifetime: 40
+area: 100
