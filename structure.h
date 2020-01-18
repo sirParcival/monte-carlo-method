@@ -35,17 +35,24 @@ typedef struct QueueList
     unsigned int number_of_list_elements;
 }QueueList;
 
-typedef struct ife
-{
-    struct ife *next;
-    int value;
-    char *key;
-}Ife;
 
-struct Queue
-{
-    Ife *first;
-    Ife *last;
-};
+
+typedef struct Data{
+    //  initialising life required variables
+    int quantity_of_rabbits;
+    int quantity_of_wolves;
+    unsigned int rabbits_starting_age;
+    unsigned int wolves_starting_age;
+    int rabbits_life_length;
+    int wolves_life_length;
+    int lifetime; // weeks
+    int rabbits_ripening_age;
+    int wolves_ripening_age;
+    int rabbit_pregnancy_time;
+    int wolf_pregnancy_time;
+    int rabbits_childrenmin;// minimal amount of children in rabbits pair
+    int wolves_childrenmin;// minimal amount of children in wolves pair
+    int area;
+}Data;
 
 #endif //MONTE_CARLO_METHOD_STRUCTURE_H

@@ -33,50 +33,34 @@ int main(int argc, char *argv[]) {
     // animals density for output file
     double rabbits_per_kits = 0;
     double wolves_per_kits = 0;
-
-    //  initialising life required variables
-    int quantity_of_rabbits = 0;
-    int quantity_of_wolves = 0;
-    unsigned int rabbits_starting_age = 0;
-    unsigned int wolves_starting_age = 0;
-    int rabbits_life_length = 0;
-    int wolves_life_length = 0;
-    int lifetime = 0; // weeks
-    int rabbits_ripening_age = 0;
-    int wolves_ripening_age = 0;
-    int rabbit_pregnancy_time = 0;
-    int wolf_pregnancy_time = 0;
-    int rabbits_childrenmin = 0;// minimal amount of children in rabbits pair
-    int wolves_childrenmin = 0;// minimal amount of children in wolves pair
-    int area = 0;
+    Data data = {0};
 
     // getting data from input file
-    parse_input_file(input_filename, &quantity_of_rabbits, &quantity_of_wolves, &rabbits_starting_age, &wolves_starting_age,
-            &rabbits_life_length, &wolves_life_length, &rabbits_ripening_age, &wolves_ripening_age, &rabbit_pregnancy_time,
-            &wolf_pregnancy_time, &rabbits_childrenmin, &wolves_childrenmin, &lifetime, &area);
+    parse_input_file(input_filename, &data);
 
 
     ///Linking rabbits and wolves to double-linked list///
-    for (int i = 0; i < quantity_of_rabbits; i++){
-        create_linked_list(list_of_rabbits, i, &rabbits_starting_age);
+    for (int i = 0; i < data.quantity_of_rabbits; i++){
+        create_linked_list(list_of_rabbits, i, data.rabbits_starting_age);
     }
-    for (int i = 0; i < quantity_of_wolves; i++){
-        create_linked_list(list_of_wolves, i, &wolves_starting_age);
+    for (int i = 0; i < data.quantity_of_wolves; i++){
+        create_linked_list(list_of_wolves, i, data.wolves_starting_age);
     }
 
     ///Life simulation///
 
-    for (int week = 0; week < lifetime; week++)
+    for (int week = 0; week < data.lifetime; week++)
     {
         //This one is for rabbits
-        simulate_life(list_of_rabbits, rabbits_death_note, rabbits_life_length, rabbits_ripening_age,
-                rabbit_pregnancy_time, rabbits_similarity, rabbits_childrenmin, ARRAY_SIZE(rabbits_similarity), week, area,
+        simulate_life(list_of_rabbits, rabbits_death_note, data.rabbits_life_length, data.rabbits_ripening_age,
+                data.rabbit_pregnancy_time, rabbits_similarity, data.rabbits_childrenmin, ARRAY_SIZE(rabbits_similarity),
+                week, data.area,
                 &rabbits_per_kits, NULL, NULL, NULL);
 
         //This one is for wolves
-        simulate_life(list_of_wolves, wolves_death_note, wolves_life_length, wolves_ripening_age, wolf_pregnancy_time,
-                wolf_similarity, wolves_childrenmin, ARRAY_SIZE(wolf_similarity), week, area, &rabbits_per_kits, &wolves_per_kits,
-                rabbits_death_note, list_of_rabbits);
+        simulate_life(list_of_wolves, wolves_death_note, data.wolves_life_length, data.wolves_ripening_age,
+                data.wolf_pregnancy_time, wolf_similarity, data.wolves_childrenmin, ARRAY_SIZE(wolf_similarity), week,
+                data.area, &rabbits_per_kits, &wolves_per_kits, rabbits_death_note, list_of_rabbits);
         //Printing result of experiment to file
         print_animal_to_file(output_filename, week, wolves_per_kits, rabbits_per_kits);
     }
