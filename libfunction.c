@@ -400,8 +400,8 @@ void get_data_from_datalist(char *key, int value, Data *data){
             data->rabbits_children_min = value;
         } else if (strcmp(key, "wolves_children_min") == 0){
             data->wolves_children_min = value;
-        } else if (strcmp(key, "lifetime") == 0){
-            data->lifetime = value;
+        } else if (strcmp(key, "simulate_time") == 0){
+            data->simulate_time = value;
         } else if (strcmp(key, "area") == 0){
             data->area = value;
         }

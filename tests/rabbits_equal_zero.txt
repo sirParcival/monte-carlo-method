@@ -1,4 +1,4 @@
-quantity_of_rabbits: 115
+quantity_of_rabbits: 0
 quantity_of_wolves: 2
 rabbits_starting_age: 2
 wolves_starting_age: 32

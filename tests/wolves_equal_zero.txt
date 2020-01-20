@@ -1,5 +1,5 @@
-quantity_of_rabbits: 115
-quantity_of_wolves: 2
+quantity_of_rabbits: 100
+quantity_of_wolves: 0
 rabbits_starting_age: 2
 wolves_starting_age: 32
 rabbits_pregnancy_time: 12

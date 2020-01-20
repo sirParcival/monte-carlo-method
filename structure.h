@@ -46,7 +46,7 @@ typedef struct Data{
     unsigned int wolves_starting_age;
     int rabbits_life_length;
     int wolves_life_length;
-    int lifetime; // weeks
+    int simulate_time; // weeks
     int rabbits_ripening_age;
     int wolves_ripening_age;
     int rabbit_pregnancy_time;

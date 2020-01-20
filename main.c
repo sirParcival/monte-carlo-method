@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
     ///Life simulation///
 
-    for (int week = 0; week < data.lifetime; week++)
+    for (int week = 0; week < data.simulate_time; week++)
     {
         //This one is for rabbits
         simulate_life(list_of_rabbits, rabbits_death_note, data.rabbits_life_length, data.rabbits_ripening_age,
