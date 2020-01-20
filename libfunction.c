@@ -17,6 +17,7 @@ void create_linked_list(QueueList *queueList, char id, unsigned int age)
         if (new_animal)
         {
             new_animal->prev = NULL;
+            new_animal->next = NULL;
             new_animal->id = id;
             new_animal->pair_ptr = NULL;
             new_animal->age = 0;
