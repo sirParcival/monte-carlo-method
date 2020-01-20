@@ -51,4 +51,15 @@ key: value
 
 P.S. You are not supposed to change "key" names. In case you change it just know that program won't work correctly.
 
+***TESTS***
+
+At 0 rabbits, all wolves die.
+
+At 0 wolves, rabbits breed.
+
+With insufficient rabbits, wolves die.
+
+With an insufficient number of wolves, rabbits breed very quickly.
+
+With too many wolves, the number of rabbits will decrease sharply, thereby leading to the destruction of wolves.
 
