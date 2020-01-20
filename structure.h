@@ -15,7 +15,8 @@ typedef struct Animal
 
     double last_week_wolf_have_eaten;
 
-    unsigned int id;
+    //unsigned int id;
+    char id;
     unsigned int age;
     unsigned int pregnancy_week;
 
@@ -50,8 +51,8 @@ typedef struct Data{
     int wolves_ripening_age;
     int rabbit_pregnancy_time;
     int wolf_pregnancy_time;
-    int rabbits_childrenmin;// minimal amount of children in rabbits pair
-    int wolves_childrenmin;// minimal amount of children in wolves pair
+    int rabbits_children_min;// minimal amount of children in rabbits pair
+    int wolves_children_min;// minimal amount of children in wolves pair
     int area;
 }Data;
 

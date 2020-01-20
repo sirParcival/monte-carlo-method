@@ -10,15 +10,20 @@
 void generate_young(QueueList *, double *similarity, int children, int array_length);
 void get_data_from_datalist(char *key, int value, Data *data);
 
-void create_linked_list(QueueList *queueList, int id, unsigned int age)
+void create_linked_list(QueueList *queueList, char id, unsigned int age)
 {
         Animal *new_animal, *current_animal;
         new_animal = (Animal *) malloc(sizeof(Animal));
-
         if (new_animal)
         {
             new_animal->prev = NULL;
-            new_animal->id = id+1;
+            new_animal->id = id;
+            new_animal->pair_ptr = NULL;
+            new_animal->age = 0;
+            new_animal->is_adult = 0;
+            new_animal->is_paired = 0;
+            new_animal->last_week_wolf_have_eaten = 0;
+            new_animal->pregnancy_week = 0;
             if (queueList->number_of_list_elements == 0)
             {
 
@@ -175,14 +180,13 @@ void print_animal_to_file(char *out_filename, int week, double wolves_density, d
     FILE *outfile = NULL;
     if(week == 0){
         outfile = fopen(out_filename, "w");
-        fprintf(outfile,"Week, Wolves density, Rabbits density");
+        fprintf(outfile,"Week, Wolves density, Rabbits density\n");
+        fprintf(outfile, "%d, %f, %f\n", week+1, wolves_density, rabbits_density);
     }else{
         outfile = fopen(out_filename, "a");
-        fprintf(outfile, "%d, %f, %f", week, wolves_density, rabbits_density);
+        fprintf(outfile, "%d, %f, %f\n", week+1, wolves_density, rabbits_density);
     }
 
-
-    fprintf(outfile, "\n");
     fclose(outfile);
 }
 
@@ -334,12 +338,12 @@ void parse_input_file(char *filename, Data *data) {
             }
         }
     }
-    free(file);
+    fclose(file);
 }
 
 
 void simulate_life(QueueList *list, QueueList *death_note, int life_length, int ripening_age, int pregnancy_time,
-                   double *similarity, int childrenmin, int simlen, int week, int area, double *rabbits_per_kits, double *wolves_per_kits,
+                   double *similarity, int children_min, int simlen, int week, int area, double *rabbits_per_kits, double *wolves_per_kits,
                    QueueList *rabbits_death_note, QueueList *list_of_rabbits)
 
 {
@@ -357,7 +361,7 @@ void simulate_life(QueueList *list, QueueList *death_note, int life_length, int 
     }
     animal_per_kits = animal_per_kits/area;
     build_pairs(list);
-    pregnancy_run(list, pregnancy_time, similarity, childrenmin, simlen);
+    pregnancy_run(list, pregnancy_time, similarity, children_min, simlen);
     if (list_of_rabbits != NULL)
     {
         *wolves_per_kits = animal_per_kits;
@@ -392,10 +396,10 @@ void get_data_from_datalist(char *key, int value, Data *data){
             data->rabbit_pregnancy_time = value;
         } else if (strcmp(key, "wolves_pregnancy_time") == 0){
             data->wolf_pregnancy_time = value;
-        } else if (strcmp(key, "rabbits_childrenmin") == 0){
-            data->rabbits_childrenmin = value;
-        } else if (strcmp(key, "wolves_childrenmin") == 0){
-            data->wolves_childrenmin = value;
+        } else if (strcmp(key, "rabbits_children_min") == 0){
+            data->rabbits_children_min = value;
+        } else if (strcmp(key, "wolves_children_min") == 0){
+            data->wolves_children_min = value;
         } else if (strcmp(key, "lifetime") == 0){
             data->lifetime = value;
         } else if (strcmp(key, "area") == 0){

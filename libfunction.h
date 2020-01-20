@@ -11,7 +11,7 @@ void simulate_life(QueueList *list, QueueList *death_note, ...);
 
 void parse_input_file(char *filename, Data *data);
 
-void create_linked_list(QueueList *queueList, int id, unsigned int age);
+void create_linked_list(QueueList *queueList, char id, unsigned int age);
 void create_list_of_old(QueueList *list, QueueList *list_of_old, int time_of_death);
 
 void print_animal_to_file(char *out_filename,int week, double wolves_density, double rabbits_density);
