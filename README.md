@@ -19,7 +19,7 @@ To build project you need use those commands:
 
 
 
-`git clone https://gitlab-stud.elka.pw.edu.pl/rkossak/monte-carlo-method.git`
+`git clone https://github.com/sirParcival/monte-carlo-method.git`
 
 `cd monte-carlo-method`
 
